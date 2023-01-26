@@ -8,6 +8,8 @@ IMPORTED = os.path.abspath(os.path.join(
 sys.path.append(IMPORTED)
 
 from model.models import Data, DataCollectionCache
+from model.model_types import EXPRESSION
+
 
 
 class ExpressionModel(Data):
@@ -16,16 +18,18 @@ class ExpressionModel(Data):
         self.var: str = args[0]
         self.expr: str = args[1]
         self.descr: str = args[2]
+        self.include: bool = True
         super().__init__()
-        self.type = 'expression'
+        self.type = EXPRESSION
 
     def data(self) -> dict:
-        return {'var': self.var, 'expr': self.expr, 'descr': self.descr}
+        return {self.id: {'var': self.var, 'expr': self.expr, 'descr': self.descr}}
 
     def update(self, *args) -> None:
         self.var: str = args[0]
         self.expr: str = args[1]
         self.descr: str = args[2]
+        self.include: bool = args[3]
         return super().update()
 
     def __repr__(self):
@@ -36,34 +40,26 @@ class ExpressionModel(Data):
 
 
 class ExpressionCollectionCache(DataCollectionCache):
-    cache = {}
 
+    def __str__(self):
+        string = ''
+        for data in self.cache[EXPRESSION]:
+            string += str(data)
+        return string
 
-    @staticmethod
-    def get(sid: int):
-        if isinstance(sid, int):
-            DATA = ExpressionCollectionCache.cache.get(sid, None)
-            return DATA.clone()
-        else:
-            pass
+    def __repr__(self):
+        string = ''
+        for data in self.cache[EXPRESSION]:
+            string += repr(data)
+        return string
 
-    @staticmethod
-    def add(data: ExpressionModel, sid: int):
-        if isinstance(sid, int) and isinstance(data, ExpressionModel):
-            data.set_id(sid)
-            ExpressionCollectionCache.cache[data.get_id()] = data
-        else:
-            pass
-
-    @staticmethod
-    def delete(sid: int):
-        if isinstance(sid, int):
-            del ExpressionCollectionCache.cache[sid]
-        else:
-            pass
+    # @staticmethod
+    # def get(gid: int):
+    #     if isinstance(gid, int):
+    #         DATA = ExpressionCollectionCache.cache[EXPRESSION]
 
     def json_serialize(self) -> list:
-        data = []
-        for val in self.cache.values():
-            data.append(val.data())
+        data = {}
+        for val in self.cache[EXPRESSION]:
+            data.update(val.data())
         return data
