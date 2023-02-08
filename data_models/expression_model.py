@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 IMPORTED = os.path.abspath(os.path.join(
     os.path.dirname(__file__),
@@ -7,8 +8,8 @@ IMPORTED = os.path.abspath(os.path.join(
 ))
 sys.path.append(IMPORTED)
 
-from model.models import Data, DataCollectionCache
-from model.model_types import EXPRESSION
+from data.models import Data, DataCollectionCache
+from data.model_types import EXPRESSION
 
 
 
@@ -53,13 +54,22 @@ class ExpressionCollectionCache(DataCollectionCache):
             string += repr(data)
         return string
 
-    # @staticmethod
-    # def get(gid: int):
-    #     if isinstance(gid, int):
-    #         DATA = ExpressionCollectionCache.cache[EXPRESSION]
-
-    def json_serialize(self) -> list:
+    def data(self) -> dict:
         data = {}
-        for val in self.cache[EXPRESSION]:
-            data.update(val.data())
+        for exp in self.cache[EXPRESSION]:
+            data.update(exp.data())
         return data
+
+    @classmethod
+    def get(cls, gid: int):
+        return super().get(gid, EXPRESSION)
+
+    @classmethod
+    def delete(cls, sid: int):
+        return super().delete(sid, EXPRESSION)
+
+    def json_serialize(self) -> dict:
+        return self.data()
+
+    def json_deserialize(self, fp) -> dict:
+        return super().json_deserialize(fp)

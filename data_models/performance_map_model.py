@@ -7,8 +7,8 @@ IMPORTED = os.path.abspath(os.path.join(
 ))
 sys.path.append(IMPORTED)
 
-from model.models import Data, DataCollectionCache
-from model.model_types import PERFORMANCE
+from data.models import Data, DataCollectionCache
+from data.model_types import PERFORMANCE
 
 
 class PerfoprmanceMapModel(Data):
@@ -53,8 +53,22 @@ class PerformanceMapCollection(DataCollectionCache):
             string += repr(data)
         return string
 
-    def json_serialize(self) -> list:
+    def data(self) -> dict:
         data = {}
-        for val in self.cache[PERFORMANCE]:
-            data.update(val.data())
+        for pm in self.cache[PERFORMANCE]:
+            data.update(pm.data())
         return data
+
+    @classmethod
+    def get(cls, gid: int):
+        return super().get(gid, PERFORMANCE)
+
+    @classmethod
+    def delete(cls, sid: int):
+        return super().delete(sid, PERFORMANCE)
+
+    def json_serialize(self) -> list:
+        return self.data()
+
+    def json_deserialize(self, fp) -> dict:
+        return super().json_deserialize(fp)

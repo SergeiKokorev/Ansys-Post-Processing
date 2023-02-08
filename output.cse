@@ -1,0 +1,10 @@
+PLANE: plane 1
+	Option = YZ Plane
+	X = 0.2
+END
+PLANE: plane 4
+	Option = Three Points
+	Point 1 = 0.1, 0.1, 0.1
+	Point 2 = 0.2, 0.2, 0.2
+	Point 3 = 0.3, 0.2, 0.3
+END
